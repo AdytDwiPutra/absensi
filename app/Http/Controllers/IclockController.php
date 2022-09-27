@@ -96,111 +96,102 @@ class IclockController extends Controller
 
         $sn   = $request->SN;
     	  $tbl  = $request->table;
+        $xt    = round(microtime(true));
+        $content = $request->getContent();
+        $array = explode("\n", $content);
+        // $newfilename = $sn . "-" . $xt . ".txt";
+        // File::put('images/' . $newfilename, $content);
 
         if ($tbl == 'ATTLOG') {
-          $content = $request->getContent();
-          $arr = preg_split('/\s+/', $content);
-          // $xt    = round(microtime(true));
-          // $newfilename = "user" . $xt . ".txt";
-          // $newfilename2 = "tanggal" . $xt . ".txt";
-          // $newfilename3 = "jam" . $xt . ".txt";
-          // $newfilename4 = "type" . $xt . ".txt";
-          // File::put('images/' . $newfilename, gettype($arr[0]));
-          // File::put('images/' . $newfilename2, gettype($arr[1]));
-          // File::put('images/' . $newfilename3, gettype($arr[2]));
-          // File::put('images/' . $newfilename4, gettype($arr[3]));
-        //   $arr =  explode(" ", $content);
+
+                      $jml_array = count($array);
+                      if($jml_array > 1 )
+                      {
+                      	foreach($array as $a => $val)
+                        {
+                          	$arr = preg_split('/\s+/', $val);
+                            unset($logatten);
+                            $logatten = [
+                                'sn' => $sn,
+                                'id_user' => $arr[0],
+                                'tanggal' => $arr[1],
+                                'waktu' => $arr[2],
+                                'tipe' => $arr[3],
+                                '4' => $arr[4],
+                                '5' => $arr[5],
+                                '6' => $arr[6],
+                                'created_at' => now(),
+                            ];
+                            unset($logic1);
+                            $logic1=Absenmasuk::where('id_user',$arr[0])
+                                          ->where('tanggal',$arr[1])
+                                          ->where('tipe',(int)$arr[3])
+                                          ->count();
+
+                            if (($arr[3] == 0) && ($logic1 == 0) ) {
+                              Absenmasuk::insert($logatten);
+                              return response('OK', 200)
+                                          ->header('Content-Type', 'text/plain');
+                            }
+                            else {
+                              // $save = Logatten::insert($logatten);
+                              return response('OK', 200)
+                                          ->header('Content-Type', 'text/plain');
+                            }
 
 
-        //   $xt    = round(microtime(true));
-        //   $newfilename = $sn . "-" . $xt . ".txt";
-        //   File::put('images/' . $newfilename, $content);
-          $date = strtotime($arr[1]);
-          $time = strtotime($arr[2]);
+                          }
+                        }
 
-          // $logatten = [
-          //     'sn' => $sn,
-          //     'id_user' => $arr[0],
-          //     'tanggal' => $date,
-          //     'waktu' => $time,
-          //     'tipe' => $arr[3],
-          //     '4' => $arr[4],
-          //     '5' => $arr[5],
-          //     '6' => $arr[6],
-          //     'created_at' => now(),
-          // ];
-          //   Absenmasuk::insert($logatten);
+                      else{
+                      	$arr = preg_split('/\s+/', $content);
+                        $logatten = [
+                            'sn' => $sn,
+                            'id_user' => $arr[0],
+                            'tanggal' => $arr[1],
+                            'waktu' => $arr[2],
+                            'tipe' => $arr[3],
+                            '4' => $arr[4],
+                            '5' => $arr[5],
+                            '6' => $arr[6],
+                            'created_at' => now(),
+                        ];
+                        $logic1=Absenmasuk::where('id_user',$arr[0])
+                                      ->where('tanggal',$arr[1])
+                                      ->where('tipe',(int)$arr[3])
+                                      ->count();
+                        unset($logic2);
+                        $logic2=Absenkeluar::where('id_user',$arr[0])
+                                      ->where('tanggal',$arr[1])
+                                      ->where('tipe',(int)$arr[3])
+                                      ->count();
+                        if (($arr[3] == 0) && ($logic1 == 0) ) {
+                          Absenmasuk::insert($logatten);
+                          return response('OK', 200)
+                                      ->header('Content-Type', 'text/plain');
+                                    }
+                          else {
+                            // $save = Logatten::insert($logatten);
+                            return response('OK', 200)
+                                        ->header('Content-Type', 'text/plain');
+                          }
 
-          $logatten = [
-              'sn' => $sn,
-              'id_user' => $arr[0],
-              'tanggal' => $arr[1],
-              'waktu' => $arr[2],
-              'tipe' => $arr[3],
-              '4' => $arr[4],
-              '5' => $arr[5],
-              '6' => $arr[6],
-              'created_at' => now(),
-          ];
 
-            // return response('OK', 200)
-            //             ->header('Content-Type', 'text/plain');
-            // return response('OK', 200)
-            //       ->header('Content-Type', 'text/plain');
-
-            // $save = Absenmasuk::insert($logatten);
-            // return response('OK', 200)
-            //             ->header('Content-Type', 'text/plain');
-
-          $logic1=Absenmasuk::where('id_user',$arr[0])
-                        ->where('tanggal',$arr[1])
-                        ->where('tipe',(int)$arr[3])
-                        ->count();
-        //   $newfilename4 = "type" . $logic1 . ".txt";
-        // File::put('images/' . $newfilename4, gettype($logic1));
-
-          $logic2=Absenkeluar::where('id_user',$arr[0])
-                        ->where('tanggal',$arr[1])
-                        ->where('tipe',(int)$arr[3])
-                        ->count();
-
-          if (($arr[3] == 0) && ($logic1 == 0) ) {
-            Absenmasuk::insert($logatten);
-            return response('OK', 200)
-                        ->header('Content-Type', 'text/plain');
+                          }
           }
 
-          if ($arr[3] == 1 && $logic2 == 0 ) {
-            Absenkeluar::insert($logatten);
-            return response('OK', 200)
-                        ->header('Content-Type', 'text/plain');
+          if ($tbl == 'OPERLOG') {
+            $content = $request->getContent();
+            $xt    = round(microtime(true));
+            $newfilename = $tbl . "-" . $sn . "-" . $xt . ".txt";
+            File::put('images/' . $newfilename, $content);
+            echo "OK:1";
+      			echo "\n";
+      			echo "POST from: " . $sn;
           }
 
-          else {
-            // $save = Logatten::insert($logatten);
-            return response('OK', 200)
-                        ->header('Content-Type', 'text/plain');
-          }
-          // $save = Logatten::insert($logatten);
-          // echo "OK:1";
-    			// echo "\n";
-    			// echo "POST from: " . $sn;
-          // return response('OK', 200)
-          //             ->header('Content-Type', 'text/plain');
-
-        }
-
-        if ($tbl == 'OPERLOG') {
-          $content = $request->getContent();
-          $xt    = round(microtime(true));
-          $newfilename = $tbl . "-" . $sn . "-" . $xt . ".txt";
-          File::put('images/' . $newfilename, $content);
-          echo "OK:1";
-    			echo "\n";
-    			echo "POST from: " . $sn;
-        }
-
-    }
 
 
+
+      }
 }
