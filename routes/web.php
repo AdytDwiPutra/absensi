@@ -74,6 +74,7 @@ Route::get('iclock/getrequest',[IclockController::class,'getrequest'])->name('ic
 Route::get('test', [MapelController::class, 'test'])->name('test');
 /**Kehadiran */
 Route::get('kehadiran',[KehadiranController::class,'index'])->name('kehadiran.index');
+Route::get('kehadiran/cekHadir',[KehadiranController::class,'report_kehadiran']);
 Route::get('hadir_Pegawai/{id}',[KehadiranController::class,'hadirClient'])->name('kehadiran.hadirClient');
-Route::get('report_kehadiran',[KehadiranController::class,'report_kehadiran'])->name('kehadiran.report');
+Route::get('report_kehadiran/{id}',[KehadiranController::class,'report_kehadiran'])->name('kehadiran.report');
 Route::post('waktu_tersedia',[KehadiranController::class,'waktu_tersedia'])->name('kehadiran.waktu_tersedia');

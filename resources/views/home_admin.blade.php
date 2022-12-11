@@ -3,9 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>SMK BAKTI ILHAM</title>
     <link rel="icon" type="image/png" href="{{ asset('images/smk.png') }}"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -176,7 +175,7 @@ a.disabled {
                                 <a href="#" class="has-arrow"><i class="fa fa-users"></i><span>Kehadiran</span></a>
                                 <ul>
                                     <li><a href="{{ route('kehadiran.index') }}">Cek Kehadiran</a></li>
-                                    <li><a href="{{ route('kehadiran.report') }}" class="">Report</a></li>
+                                    <li><a href="{{ url('report_kehadiran/1') }}" class="">Report</a></li>
                                 </ul>
                             </li>
                             <li>
@@ -385,6 +384,7 @@ a.disabled {
 
 </div>
 <!-- Javascript -->
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script src="{{ asset('assets/bundles/libscripts.bundle.js') }}"></script>
 <script src="{{ asset('assets/bundles/vendorscripts.bundle.js') }}"></script>
 <!-- page vendor js file -->

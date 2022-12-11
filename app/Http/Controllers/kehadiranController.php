@@ -43,22 +43,40 @@ class kehadiranController extends Controller
         return view('admin.kehadiran', compact('data','tgl'));
     }
 
-    public function report_kehadiran(){
+    public function report_kehadiran($no){
+
         setlocale(LC_TIME, 'id_ID');
         \Carbon\Carbon::setLocale('id');
 
         $kalender = CAL_GREGORIAN;
         $bulan = date('m');
         $tahun = date('Y');
-
-        $hari = cal_days_in_month($kalender, $bulan, $tahun);
-        for($i = 1;$i<=$hari;$i++){
-            if($i<10){
-            $tanggal[] = $tahun."-".$bulan."-0".$i;
-            }else{
-            $tanggal[] = $tahun."-".$bulan."-".$i;
+        if($no != "1"){
+            $hari = cal_days_in_month($kalender, $no, $tahun);
+            $datefrom = '2022-'.$no.'-01';
+            $dateto = '2022-'.$no.'-'.$hari;
+            for($i = 1;$i<=$hari;$i++){
+                if($i<10){
+                $tanggal[] = $tahun."-".$no."-0".$i;
+    
+                }else{
+                $tanggal[] = $tahun."-".$no."-".$i;
+                }
+            }
+        }else{
+            $hari = cal_days_in_month($kalender, $bulan, $tahun);
+            $datefrom = '2022-'.$bulan.'-01';
+            $dateto = '2022-'.$bulan.'-'.$hari;
+            for($i = 1;$i<=$hari;$i++){
+                if($i<10){
+                $tanggal[] = $tahun."-".$bulan."-0".$i;
+    
+                }else{
+                $tanggal[] = $tahun."-".$bulan."-".$i;
+                }
             }
         }
+        // dd($datefrom);
         $array = json_decode(file_get_contents("https://raw.githubusercontent.com/guangrei/Json-Indonesia-holidays/master/calendar.json"),true);
         $index_array = array_keys($array);
         foreach($index_array as $key){
@@ -85,14 +103,15 @@ class kehadiranController extends Controller
         $data['tanggal'] = $tanggal;
         $users = DB::table('karyawan')->get();
 
+
         if($cekKehadiran == 0){
             $result = null;
         }else{
-
             foreach($data['absenmasuk'] as $a){
                 $absenmasuk = DB::table('absenmasuk')->join('karyawan','karyawan.id_user','=','absenmasuk.id_user')
                     ->select('absenmasuk.id_user','karyawan.nama','absenmasuk.tanggal','absenmasuk.waktu')
                     ->where('absenmasuk.id_user', $a->id_user)
+                    ->whereBetween('absenmasuk.tanggal', [$datefrom, $dateto])
                     ->get();
                 $name = DB::table('absenmasuk')->join('karyawan','karyawan.id_user','=','absenmasuk.id_user')
                     ->select('absenmasuk.id_user','karyawan.nama','absenmasuk.tanggal','absenmasuk.waktu')
@@ -101,6 +120,7 @@ class kehadiranController extends Controller
                 $countHadir = DB::table('absenmasuk')->join('karyawan','karyawan.id_user','=','absenmasuk.id_user')
                     ->select('absenmasuk.id_user','karyawan.nama','absenmasuk.tanggal','absenmasuk.waktu')
                     ->where('absenmasuk.id_user', $a->id_user)
+                    ->whereBetween('absenmasuk.tanggal', [$datefrom, $dateto])
                     ->count();
                 foreach($tanggal as $b){
                     $waktumsk = "";
@@ -127,20 +147,43 @@ class kehadiranController extends Controller
 
                 $result[] = ["id_user"=>$a->id_user,"nama"=>$name->nama, "absenmasuk" => $absen,"count"=>$countHadir];
                 // $result[] = ["id_user"=>$a->id_user, "absenmasuk" => $absen,"count"=>$countHadir];
+                // dd($result);
+
             }
 
         }
-        foreach($users as $a){
-            foreach($result as $b){
-                if($a->id_user == $b['id_user']){
-                    $hasilfix[] = ['nama' => $a->nama, 'kehadiran'=>$b['absenmasuk'], 'count' => $b['count']];
-                }else{
-                    $hasilfix[] = ['nama' => $a->nama, 'kehadiran'=>null, 'count' => null];
-                }
-            }
+
+        $namaBulan = array(
+            "01" => "Januari",
+            "02" => "Februari",
+            "03" => "Maret",
+            "04" => "April",
+            "05" => "Mei",
+            "06" => "Juni",
+            "07" => "Juli",
+            "08" => "Agustus",
+            "09" => "September",
+            "10" => "Oktober",
+            "11" => "November",
+            "12" => "Desember" 
+        );
+        // dd($no);
+        // for($i=0;$i<count($result);$i){
+        //     for($x=0;$x<$hari;$x++){
+        //         dd($result[$i]['absenmasuk'][$x]);
+        //     }
+        // }
+
+        if($no == '1'){
+            return view('admin.report_kehadiran', compact('tanggal','tgl_libur','result','data','hari','namaBulan'));
+        }else{
+
+            return response()->json(array(
+                'result' => $result,
+                'namaBulan' => $namaBulan,
+                'hari' => $hari
+            ));
         }
-        // dd($hasilfix);
-        return view('admin.report_kehadiran', compact('tanggal','tgl_libur','result','data','hasilfix'));
     }
 
 
@@ -181,9 +224,8 @@ class kehadiranController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
     }
 
     /**
@@ -219,4 +261,4 @@ class kehadiranController extends Controller
     {
         //
     }
-}
+    }
