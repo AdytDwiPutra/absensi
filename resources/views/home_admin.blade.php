@@ -175,7 +175,7 @@ a.disabled {
                                 <a href="#" class="has-arrow"><i class="fa fa-users"></i><span>Kehadiran</span></a>
                                 <ul>
                                     <li><a href="{{ route('kehadiran.index') }}">Cek Kehadiran</a></li>
-                                    <li><a href="{{ url('report_kehadiran/1') }}" class="">Report</a></li>
+                                    <li><a href="{{ url('report_kehadiran/99') }}" class="">Report</a></li>
                                 </ul>
                             </li>
                             <li>

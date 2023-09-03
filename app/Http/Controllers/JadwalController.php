@@ -81,4 +81,8 @@ class JadwalController extends Controller
     {
         //
     }
+    public function export_excel($bulan){
+        dd($bulan);
+    }
+
 }

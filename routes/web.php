@@ -11,6 +11,7 @@ use App\Http\Controllers\KehadiranController;
 use App\Http\Controllers\ProfesiController;
 use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\exportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,6 +61,7 @@ Route::get('/mapel/delete/{id}', [MapelController::class, 'destroy']);
 Route::get('/jadwal', [JadwalController::class,'index'])->name('jadwal');
 
 Route::post('/registrasi', [RegistrasiController::class, 'create'])->name('registrasi');
+Route::get('/export/{type}/{bulan}',[exportController::class,'export']); 
 
 /**Face detection */
 Route::get('/absensi', function () {
@@ -76,5 +78,6 @@ Route::get('test', [MapelController::class, 'test'])->name('test');
 Route::get('kehadiran',[KehadiranController::class,'index'])->name('kehadiran.index');
 Route::get('kehadiran/cekHadir',[KehadiranController::class,'report_kehadiran']);
 Route::get('hadir_Pegawai/{id}',[KehadiranController::class,'hadirClient'])->name('kehadiran.hadirClient');
-Route::get('report_kehadiran/{id}',[KehadiranController::class,'report_kehadiran'])->name('kehadiran.report');
+Route::get('report_kehadiran/{id}',[KehadiranController::class,'report_kehadiran'])->name('kehadiran.report'); 
 Route::post('waktu_tersedia',[KehadiranController::class,'waktu_tersedia'])->name('kehadiran.waktu_tersedia');
+
